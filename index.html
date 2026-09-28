@@ -24,6 +24,12 @@
           </div>
 
           <div class="form-group">
+            <label for="email">College Email (Must contain @niet)</label>
+            <input type="email" id="email" placeholder="e.g. student@niet.co.in" required />
+            <small id="emailError" style="color: #ef4444; display: none; margin-top: 4px;">Only emails containing '@niet' are allowed to submit feedback.</small>
+          </div>
+
+          <div class="form-group">
             <label for="course">Course Name</label>
             <input type="text" id="course" placeholder="e.g. Cloud Computing & DevOps" required />
           </div>
@@ -49,6 +55,8 @@
 
   <script>
     const form = document.getElementById('feedbackForm');
+    const emailInput = document.getElementById('email');
+    const emailError = document.getElementById('emailError');
     const feedbackContainer = document.getElementById('feedbackContainer');
 
     function loadFeedbacks() {
@@ -62,7 +70,7 @@
       feedbackContainer.innerHTML = data.map(item => `
         <div class="feedback-item">
           <div class="feedback-header">
-            <span class="student-name">${item.name}</span>
+            <span class="student-name">${item.name} <small style="color: #6b7280; font-weight: normal;">(${item.email})</small></span>
             <span class="course-badge">${item.course}</span>
           </div>
           <p class="feedback-text">${item.feedback}</p>
@@ -74,8 +82,21 @@
     form.addEventListener('submit', (e) => {
       e.preventDefault();
 
+      const email = emailInput.value.trim().toLowerCase();
+
+      // Test condition: must contain @niet
+      if (!email.includes('@niet')) {
+        emailError.style.display = 'block';
+        emailInput.style.borderColor = '#ef4444';
+        return;
+      }
+
+      emailError.style.display = 'none';
+      emailInput.style.borderColor = '#d1d5db';
+
       const newEntry = {
         name: document.getElementById('name').value.trim(),
+        email: email,
         course: document.getElementById('course').value.trim(),
         feedback: document.getElementById('feedback').value.trim(),
         date: new Date().toLocaleString()
