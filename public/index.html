@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Feedback Portal</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🎓 Student Feedback System</h1>
+      <p>Submit your course reviews and feedback below</p>
+    </header>
+
+    <main>
+      <!-- Feedback Submission Form -->
+      <section class="card form-section">
+        <h2>Submit Feedback</h2>
+        <form id="feedbackForm">
+          <div class="form-group">
+            <label for="name">Student Name</label>
+            <input type="text" id="name" placeholder="e.g. Jane Doe" required />
+          </div>
+
+          <div class="form-group">
+            <label for="course">Course Name</label>
+            <input type="text" id="course" placeholder="e.g. Cloud Computing & DevOps" required />
+          </div>
+
+          <div class="form-group">
+            <label for="feedback">Your Feedback</label>
+            <textarea id="feedback" rows="4" placeholder="Enter constructive feedback..." required></textarea>
+          </div>
+
+          <button type="submit" id="submitBtn">Submit Feedback</button>
+        </form>
+      </section>
+
+      <!-- Feedback List View -->
+      <section class="card list-section">
+        <h2>Recent Submissions</h2>
+        <div id="feedbackContainer" class="feedback-container">
+          <p class="placeholder-text">No feedback submitted yet.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const form = document.getElementById('feedbackForm');
+    const feedbackContainer = document.getElementById('feedbackContainer');
+
+    function loadFeedbacks() {
+      const data = JSON.parse(localStorage.getItem('studentFeedbacks') || '[]');
+
+      if (data.length === 0) {
+        feedbackContainer.innerHTML = '<p class="placeholder-text">No feedback submitted yet.</p>';
+        return;
+      }
+
+      feedbackContainer.innerHTML = data.map(item => `
+        <div class="feedback-item">
+          <div class="feedback-header">
+            <span class="student-name">${item.name}</span>
+            <span class="course-badge">${item.course}</span>
+          </div>
+          <p class="feedback-text">${item.feedback}</p>
+          <span class="timestamp">${item.date}</span>
+        </div>
+      `).join('');
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const newEntry = {
+        name: document.getElementById('name').value.trim(),
+        course: document.getElementById('course').value.trim(),
+        feedback: document.getElementById('feedback').value.trim(),
+        date: new Date().toLocaleString()
+      };
+
+      const existing = JSON.parse(localStorage.getItem('studentFeedbacks') || '[]');
+      existing.unshift(newEntry);
+      localStorage.setItem('studentFeedbacks', JSON.stringify(existing));
+
+      form.reset();
+      loadFeedbacks();
+    });
+
+    loadFeedbacks();
+  </script>
+</body>
+</html>
